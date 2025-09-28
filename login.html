@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Room Matcher – Login / Sign-Up</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Extra style for the toggle links */
+    .toggle-link {
+        display: block;
+        margin-top: 15px;
+        color: #007bff;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .toggle-link:hover {
+        text-decoration: underline;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <h2 id="form-title">🔑 Login</h2>
+
+    <!-- LOGIN FORM -->
+    <div id="loginForm" class="login-card">
+      <label for="loginUser">Username:</label>
+      <input type="text" id="loginUser" placeholder="Enter username" required>
+
+      <label for="loginPass">Password:</label>
+      <input type="password" id="loginPass" placeholder="Enter password" required>
+
+      <button onclick="login()">Login</button>
+      <a class="toggle-link" onclick="showSignup()">Need an account? Sign Up</a>
+    </div>
+
+    <!-- SIGN-UP FORM -->
+    <div id="signupForm" class="login-card hidden">
+      <label for="signupUser">Choose Username:</label>
+      <input type="text" id="signupUser" placeholder="Pick a username" required>
+
+      <label for="signupEmail">Email:</label>
+      <input type="email" id="signupEmail" placeholder="Enter email" required>
+
+      <label for="signupPass">Password:</label>
+      <input type="password" id="signupPass" placeholder="Create password" required>
+
+      <button onclick="signup()">Create Account</button>
+      <a class="toggle-link" onclick="showLogin()">Already have an account? Login</a>
+    </div>
+  </div>
+
+  <script>
+    // --- Toggle Forms ---
+    function showSignup() {
+      document.getElementById('loginForm').classList.add('hidden');
+      document.getElementById('signupForm').classList.remove('hidden');
+      document.getElementById('form-title').textContent = "📝 Sign Up";
+    }
+   function showLogin() {
+  document.getElementById('signupForm').classList.add('hidden');
+  document.getElementById('loginForm').classList.remove('hidden');
+  document.getElementById('form-title').textContent = "🔑 Login";
+
+  // 🧹 Clear previous input values each time we show the login form
+  document.getElementById('loginUser').value = "";
+  document.getElementById('loginPass').value = "";
+}
+
+    // --- Sign Up ---
+    function signup() {
+      const user = document.getElementById('signupUser').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const pass = document.getElementById('signupPass').value;
+
+      if (!user || !email || !pass) {
+        alert("Please fill all fields.");
+        return;
+      }
+
+      // Simple localStorage DB (object of {username: {email, pass}})
+      let users = JSON.parse(localStorage.getItem('roomUsers') || '{}');
+
+      if (users[user]) {
+        alert("Username already exists. Choose another.");
+        return;
+      }
+
+      users[user] = { email: email, pass: pass };
+      localStorage.setItem('roomUsers', JSON.stringify(users));
+
+      alert("Account created! Please log in.");
+      showLogin();
+    }
+
+    // --- Login ---
+    function login() {
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value;
+
+  let users = JSON.parse(localStorage.getItem('roomUsers') || '{}');
+
+  if (users[user] && users[user].pass === pass) {
+    // 🔑 Save current session
+    localStorage.setItem('currentUser', user);
+
+    alert("Welcome " + user + "! Redirecting to Room Matcher...");
+    window.location.href = "match.html";
+  } else {
+    alert("Invalid username or password.");
+  }
+}
+  </script>
+</body>
+</html>

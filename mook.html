@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Roommate Matcher AI Demo</title>
+  <style>
+    body { font-family: Arial; margin: 30px; }
+    input, select { margin: 5px; padding: 5px; }
+    button { padding: 10px 20px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+<h2>Roommate Matcher AI Demo</h2>
+
+<form id="profileForm">
+  Name: <input type="text" id="name"><br>
+  Budget: <input type="number" id="budget"><br>
+  Sleep: <select id="sleep"><option>early</option><option>night</option></select><br>
+  Cleanliness: <select id="cleanliness"><option>low</option><option>medium</option><option>high</option></select><br>
+  Noise: <select id="noise"><option>low</option><option>medium</option><option>high</option></select><br>
+  Food: <select id="food"><option>veg</option><option>non-veg</option><option>both</option></select><br>
+  Religion: <input type="text" id="religion"><br><br>
+  <button type="button" onclick="findMatches()">Find Matches</button>
+</form>
+
+<h3>Top Matches:</h3>
+<ul id="matches"></ul>
+
+<script>
+  // ---------- Preloaded 25 students ----------
+  const students = [
+    {name:"Ali",budget:12,sleep:"night",cleanliness:"medium",noise:"medium",food:"veg",religion:"Muslim"},
+    {name:"Sara",budget:10,sleep:"early",cleanliness:"high",noise:"low",food:"non-veg",religion:"Muslim"},
+    {name:"Ahmed",budget:15,sleep:"night",cleanliness:"high",noise:"medium",food:"both",religion:"Muslim"},
+    {name:"Fatima",budget:11,sleep:"early",cleanliness:"medium",noise:"low",food:"veg",religion:"Muslim"},
+    {name:"Hassan",budget:13,sleep:"night",cleanliness:"medium",noise:"high",food:"non-veg",religion:"Muslim"},
+    {name:"Ayesha",budget:12,sleep:"early",cleanliness:"high",noise:"medium",food:"both",religion:"Muslim"},
+    {name:"Bilal",budget:14,sleep:"night",cleanliness:"low",noise:"high",food:"veg",religion:"Muslim"},
+    {name:"Zoya",budget:10,sleep:"early",cleanliness:"medium",noise:"low",food:"veg",religion:"Muslim"},
+    {name:"Omar",budget:12,sleep:"night",cleanliness:"medium",noise:"medium",food:"non-veg",religion:"Muslim"},
+    {name:"Maha",budget:11,sleep:"early",cleanliness:"high",noise:"low",food:"veg",religion:"Muslim"},
+    {name:"Hamza",budget:14,sleep:"night",cleanliness:"low",noise:"medium",food:"non-veg",religion:"Muslim"},
+    {name:"Noor",budget:13,sleep:"early",cleanliness:"medium",noise:"medium",food:"both",religion:"Muslim"},
+    {name:"Sami",budget:12,sleep:"night",cleanliness:"high",noise:"high",food:"veg",religion:"Muslim"},
+    {name:"Iqra",budget:11,sleep:"early",cleanliness:"medium",noise:"low",food:"veg",religion:"Muslim"},
+    {name:"Tariq",budget:13,sleep:"night",cleanliness:"medium",noise:"high",food:"non-veg",religion:"Muslim"},
+    {name:"Hina",budget:12,sleep:"early",cleanliness:"high",noise:"medium",food:"both",religion:"Muslim"},
+    {name:"Usman",budget:14,sleep:"night",cleanliness:"low",noise:"medium",food:"veg",religion:"Muslim"},
+    {name:"Areeba",budget:10,sleep:"early",cleanliness:"medium",noise:"low",food:"non-veg",religion:"Muslim"},
+    {name:"Fahad",budget:12,sleep:"night",cleanliness:"medium",noise:"medium",food:"both",religion:"Muslim"},
+    {name:"Sana",budget:11,sleep:"early",cleanliness:"high",noise:"low",food:"veg",religion:"Muslim"},
+    {name:"Shahzaib",budget:13,sleep:"night",cleanliness:"medium",noise:"high",food:"veg",religion:"Muslim"},
+    {name:"Mariam",budget:12,sleep:"early",cleanliness:"medium",noise:"medium",food:"both",religion:"Muslim"},
+    {name:"Rashid",budget:14,sleep:"night",cleanliness:"low",noise:"high",food:"veg",religion:"Muslim"},
+    {name:"Huma",budget:11,sleep:"early",cleanliness:"high",noise:"medium",food:"non-veg",religion:"Muslim"},
+    {name:"Naveed",budget:12,sleep:"night",cleanliness:"medium",noise:"medium",food:"both",religion:"Muslim"}
+  ];
+
+  // ---------- Compute Compatibility ----------
+  function computeScore(s1,s2){
+    let score=0;
+    if(s1.sleep===s2.sleep) score+=15;
+    if(s1.cleanliness===s2.cleanliness) score+=15;
+    if(s1.noise===s2.noise) score+=15;
+    let budgetDiff=Math.abs(s1.budget-s2.budget);
+    score+=Math.max(0,30-budgetDiff);
+    if(s1.religion===s2.religion) score+=10;
+    if(s1.food===s2.food || s1.food==='both' || s2.food==='both') score+=10;
+    return score;
+  }
+
+  // ---------- Find Top Matches ----------
+  function findMatches(){
+    const newProfile = {
+      name: document.getElementById('name').value,
+      budget: parseInt(document.getElementById('budget').value),
+      sleep: document.getElementById('sleep').value,
+      cleanliness: document.getElementById('cleanliness').value,
+      noise: document.getElementById('noise').value,
+      food: document.getElementById('food').value,
+      religion: document.getElementById('religion').value
+    };
+
+    // Add new profile to students
+    students.push(newProfile);
+
+    const matches = students
+      .filter(s=>s.name!==newProfile.name)
+      .map(s=>({name:s.name, score:computeScore(newProfile,s)}))
+      .sort((a,b)=>b.score-a.score)
+      .slice(0,5);
+
+    const ul = document.getElementById('matches');
+    ul.innerHTML="";
+    matches.forEach(m=>{
+      const li=document.createElement('li');
+      li.innerText=`${m.name} — Score: ${m.score}`;
+      ul.appendChild(li);
+    });
+  }
+</script>
+</body>
+</html>

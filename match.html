@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Roommate Matcher AI Demo</title>
+    <link rel="stylesheet" href="style.css"> 
+</head>
+<body>
+    <h2>🤝 Roommate Matcher AI Demo</h2>
+     <nav style="margin-bottom:20px;">
+  <a href="index.html">🏠 Home</a> |
+  <a href="login.html">🔑 Logout</a>
+</nav>
+    <div id="profileForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" value="DemoUser" required>
+        
+        <label for="budget">Budget (in thousands PKR, e.g., 18 for 18k):</label>
+        <input type="number" id="budget" value="18" required>
+        
+        <label for="sleep">Sleep Schedule:</label>
+        <select id="sleep">
+            <option value="early">Early Bird (Sleeps Early)</option>
+            <option value="night" selected>Night Owl (Sleeps Late)</option>
+        </select>
+        
+        <label for="cleanliness">Cleanliness:</label>
+        <select id="cleanliness">
+            <option value="low">Low (Relaxed)</option>
+            <option value="medium">Medium (Average)</option>
+            <option value="high">High (Very Tidy)</option>
+        </select>
+        
+        <label for="noise">Noise Tolerance:</label>
+        <select id="noise">
+            <option value="low">Low (Needs Quiet)</option>
+            <option value="medium">Medium</option>
+            <option value="high">High (Loud)</option>
+        </select>
+        
+        <label for="food">Food Preference:</label>
+        <select id="food">
+            <option value="veg">Vegetarian</option>
+            <option value="non-veg">Non-Vegetarian</option>
+            <option value="both">Eats Both</option>
+        </select>
+        
+        <label for="religion">Religion (e.g., Muslim, Christian):</label>
+        <input type="text" id="religion" value="Muslim" required>
+        
+        <button type="button" onclick="findMatches()">Find Matches</button>
+    </div>
+
+    <h3>Top Matches:</h3>
+    <ul id="matches"></ul>
+
+    <h3 id="bestMatchTitle" style="display:none;">🎯 AI Agent’s Pick:</h3>
+<div id="bestMatchBox" style="display:none;"
+     class="best-match-box"></div>
+
+<script>
+    // -----------------------------------------------------
+    // --- PART 1: PRELOADED STUDENT DATABASE (The Mock Data) ---
+    // -----------------------------------------------------
+    const students = [
+        // Name, Budget (in 'k'), Sleep, Cleanliness, Noise, Food, Religion
+        {name:"Ali",budget:12,sleep:"night",cleanliness:"medium",noise:"medium",food:"veg",religion:"Muslim"},
+        {name:"Sara",budget:10,sleep:"early",cleanliness:"high",noise:"low",food:"non-veg",religion:"Muslim"},
+        {name:"Ahmed",budget:15,sleep:"night",cleanliness:"high",noise:"medium",food:"both",religion:"Muslim"},
+        {name:"Fatima",budget:11,sleep:"early",cleanliness:"medium",noise:"low",food:"veg",religion:"Muslim"},
+        {name:"Hassan",budget:13,sleep:"night",cleanliness:"medium",noise:"high",food:"non-veg",religion:"Muslim"},
+        {name:"Ayesha",budget:12,sleep:"early",cleanliness:"high",noise:"medium",food:"both",religion:"Muslim"},
+        {name:"Bilal",budget:14,sleep:"night",cleanliness:"low",noise:"high",food:"veg",religion:"Muslim"},
+        {name:"Zoya",budget:10,sleep:"early",cleanliness:"medium",noise:"low",food:"veg",religion:"Muslim"},
+        {name:"Omar",budget:12,sleep:"night",cleanliness:"medium",noise:"medium",food:"non-veg",religion:"Muslim"},
+        {name:"Maha",budget:11,sleep:"early",cleanliness:"high",noise:"low",food:"veg",religion:"Muslim"},
+        {name:"Hamza",budget:14,sleep:"night",cleanliness:"low",noise:"medium",food:"non-veg",religion:"Muslim"},
+        {name:"Noor",budget:13,sleep:"early",cleanliness:"medium",noise:"medium",food:"both",religion:"Muslim"},
+        {name:"Sami",budget:12,sleep:"night",cleanliness:"high",noise:"high",food:"veg",religion:"Muslim"},
+        {name:"Iqra",budget:11,sleep:"early",cleanliness:"medium",noise:"low",food:"veg",religion:"Muslim"},
+        {name:"Tariq",budget:13,sleep:"night",cleanliness:"medium",noise:"high",food:"non-veg",religion:"Muslim"},
+        {name:"Hina",budget:12,sleep:"early",cleanliness:"high",noise:"medium",food:"both",religion:"Muslim"},
+        {name:"Usman",budget:14,sleep:"night",cleanliness:"low",noise:"medium",food:"veg",religion:"Muslim"},
+        {name:"Areeba",budget:10,sleep:"early",cleanliness:"medium",noise:"low",food:"non-veg",religion:"Muslim"},
+        {name:"Fahad",budget:12,sleep:"night",cleanliness:"medium",noise:"medium",food:"both",religion:"Muslim"},
+        {name:"Sana",budget:11,sleep:"early",cleanliness:"high",noise:"low",food:"veg",religion:"Muslim"},
+        {name:"Shahzaib",budget:13,sleep:"night",cleanliness:"medium",noise:"high",food:"veg",religion:"Muslim"},
+        {name:"Mariam",budget:12,sleep:"early",cleanliness:"medium",noise:"medium",food:"both",religion:"Muslim"},
+        {name:"Rashid",budget:14,sleep:"night",cleanliness:"low",noise:"high",food:"veg",religion:"Muslim"},
+        {name:"Huma",budget:11,sleep:"early",cleanliness:"high",noise:"medium",food:"non-veg",religion:"Muslim"},
+        {name:"Naveed",budget:12,sleep:"night",cleanliness:"medium",noise:"medium",food:"both",religion:"Muslim"}
+    ];
+
+    // -----------------------------------------------------
+    // --- PART 2: MATCH SCORER AGENT LOGIC (computeScore) ---
+    // -----------------------------------------------------
+    function computeScore(s1, s2) {
+        let score = 0;
+        let reasons = []; 
+
+        // 1. Sleep Schedule (15 points)
+        if (s1.sleep === s2.sleep) {
+            score += 15;
+            reasons.push("Sleep Schedule Match: Both are " + s1.sleep + "s. (15 points)");
+        } else {
+            reasons.push("Sleep Schedule Conflict: One is early, one is late. (0 points)");
+        }
+
+        // 2. Cleanliness (15 points)
+        const cleanlinessLevels = ['low', 'medium', 'high'];
+        const diff = Math.abs(cleanlinessLevels.indexOf(s1.cleanliness) - cleanlinessLevels.indexOf(s2.cleanliness));
+        
+        if (diff === 0) { // Perfect match (low/low, medium/medium, high/high)
+            score += 15;
+            reasons.push("Cleanliness Match: Both are " + s1.cleanliness + ". (15 points)");
+        } else if (diff === 1) { // Partial match (low/medium or medium/high)
+            score += 5; 
+            reasons.push("Cleanliness Partial Match: Levels are close. (5 points)");
+        } else { // High conflict (low/high)
+             reasons.push("Cleanliness Conflict: One is tidy, one is messy. (0 points)");
+        }
+
+        // 3. Noise Tolerance (15 points)
+        if (s1.noise === s2.noise) {
+            score += 15;
+            reasons.push("Noise Match: Both are " + s1.noise + " tolerance. (15 points)");
+        } else {
+             reasons.push("Noise Conflict: Needs quiet vs. Likes noise. (0 points)");
+        }
+
+        // 4. Budget Compatibility (Up to 30 points)
+        let budgetDiff = Math.abs(s1.budget - s2.budget);
+        let budgetPoints = Math.max(0, 30 - (budgetDiff * 5)); // Lose 5 points for every 'k' difference
+        score += budgetPoints;
+        reasons.push(`Budget Match: Difference is ${budgetDiff}k. (${Math.round(budgetPoints)} points)`);
+
+        // 5. Religion (10 points)
+        if (s1.religion.toLowerCase() === s2.religion.toLowerCase()) {
+            score += 10;
+            reasons.push("Religion Match: Same religious background. (10 points)");
+        } else {
+            reasons.push("Religion difference. (0 points)");
+        }
+
+        // 6. Food Compatibility (10 points)
+        if (s1.food === s2.food || s1.food === 'both' || s2.food === 'both') {
+            score += 10;
+            reasons.push("Food Match: Preferences are compatible. (10 points)");
+        } else {
+            reasons.push("Food Conflict: Strict veg vs non-veg. (0 points)");
+        }
+
+        // Max Score is 95
+        return { score: Math.min(95, score), reasons: reasons };
+    }
+
+    // -----------------------------------------------------
+    // --- PART 3: DISPLAY AND ORCHESTRATION ---
+    // -----------------------------------------------------
+    function findMatches() {
+    const newProfile = {
+        name: document.getElementById('name').value,
+        budget: parseInt(document.getElementById('budget').value),
+        sleep: document.getElementById('sleep').value,
+        cleanliness: document.getElementById('cleanliness').value,
+        noise: document.getElementById('noise').value,
+        food: document.getElementById('food').value,
+        religion: document.getElementById('religion').value
+    };
+
+    if (isNaN(newProfile.budget) || newProfile.name.trim() === "") {
+        alert("Please enter a valid Name and Budget.");
+        return;
+    }
+
+    // --- Compute all scores
+    const matches = students
+        .filter(s => s.name !== newProfile.name)
+        .map(s => {
+            const result = computeScore(newProfile, s);
+            return { 
+                name: s.name, 
+                score: result.score, 
+                reasons: result.reasons,
+                details: s 
+            };
+        })
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 5);
+
+    // --- Display Top 5
+    const ul = document.getElementById('matches');
+    ul.innerHTML = "";
+    matches.forEach(m => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <span>${m.name}</span>
+            <span class="score">Score: ${m.score} / 95</span>
+            <details>
+                <summary>Why this match?</summary>
+                <ul style="padding-left:20px;margin-top:5px;">
+                    ${m.reasons.map(r => `<li>${r}</li>`).join('')}
+                </ul>
+            </details>
+        `;
+        ul.appendChild(li);
+    });
+
+    // --- 🎯 Highlight the Best Match
+    if (matches.length > 0) {
+        const best = matches[0];
+        document.getElementById('bestMatchTitle').style.display = "block";
+        const box = document.getElementById('bestMatchBox');
+        box.style.display = "block";
+        box.innerHTML = `
+            <strong>${best.name}</strong><br>
+            Compatibility Score: <span class="score">${best.score}</span>/95
+            <p style="margin-top:8px;">This is the AI agent’s recommended roommate based on your lifestyle and preferences.</p>
+        `;
+    } else {
+        document.getElementById('bestMatchTitle').style.display = "none";
+        document.getElementById('bestMatchBox').style.display = "none";
+    }
+}
+</script>
+
+</body>
+</html>

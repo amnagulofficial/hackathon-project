@@ -1,0 +1,201 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    margin: 0; 
+    padding: 40px; 
+    background-color: #f4f7f6; /* Light gray background */
+    color: #333; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+nav {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    background-color: #007bff;      /* Primary blue background */
+    padding: 12px 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    margin-bottom: 30px;            /* Space below the bar */
+}
+
+nav a {
+    color: #ffffff;                 /* White text for links */
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1em;
+    transition: color 0.3s, transform 0.1s;
+}
+
+nav a:hover {
+    color: #ffdd57;                 /* Gold/yellow hover color */
+    transform: scale(1.05);
+}
+
+nav a:active {
+    transform: scale(0.98);
+}
+
+/* --- Headers and Title --- */
+h2 { 
+    color: #007bff; /* Primary blue for main title */
+    border-bottom: 3px solid #007bff; 
+    padding-bottom: 10px; 
+    margin-bottom: 25px;
+    font-size: 1.8em;
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+}
+
+h3 { 
+    color: #555; 
+    margin-top: 30px; 
+    font-size: 1.5em;
+    width: 100%;
+    max-width: 600px;
+}
+
+/* --- Form Container Styling --- */
+#profileForm { 
+    background-color: #ffffff; /* White background for the form */
+    padding: 30px; 
+    border-radius: 12px; 
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); 
+    width: 100%;
+    max-width: 400px; /* Keep form compact */
+}
+
+/* --- Input and Select Fields --- */
+label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #333;
+}
+
+input[type="text"], input[type="number"], select { 
+    width: 100%; 
+    padding: 10px; 
+    margin-bottom: 15px; 
+    box-sizing: border-box; 
+    border: 1px solid #ced4da; /* Light border */
+    border-radius: 6px;
+    font-size: 1em;
+    transition: border-color 0.3s;
+}
+
+input:focus, select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+    outline: none;
+}
+
+/* --- Button Styling --- */
+button { 
+    background-color: #28a745; /* Success green */
+    color: white; 
+    padding: 12px 25px; 
+    border: none; 
+    border-radius: 6px; 
+    cursor: pointer;
+    margin-top: 20px;
+    font-size: 1.1em;
+    transition: background-color 0.3s, transform 0.1s;
+    width: 100%;
+    box-shadow: 0 4px 6px rgba(40, 167, 69, 0.3);
+}
+
+button:hover { 
+    background-color: #1e7e34; /* Darker green on hover */
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+/* --- Matches List Styling --- */
+#matches { 
+    list-style: none; 
+    padding: 0; 
+    width: 100%;
+    max-width: 600px;
+}
+
+#matches li { 
+    padding: 15px 20px; 
+    margin-bottom: 10px; 
+    background-color: #e9f7ff; /* Very light blue background */
+    border-radius: 8px; 
+    border-left: 6px solid #007bff; /* Strong accent color */
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.score {
+    font-size: 1.2em;
+    color: #dc3545; /* Red for high visibility of score */
+    font-weight: 700;
+}
+
+/* --- Wingman Agent Explanation Details --- */
+details {
+    margin-top: 10px; 
+    color: #333; 
+    font-weight: 400;
+    width: 100%; /* Ensure details take full width */
+}
+
+summary {
+    cursor: pointer; 
+    color: #007bff; 
+    font-weight: 600;
+    list-style: none; /* Hide default arrow for cleaner look */
+    /* Add custom arrow using ::before pseudo-element */
+}
+
+summary::before {
+    content: "▶";
+    margin-right: 8px;
+    color: #007bff;
+    transition: transform 0.2s;
+    display: inline-block;
+}
+
+details[open] summary::before {
+    content: "▼";
+    transform: rotate(0deg);
+}
+
+details ul {
+    padding-left: 20px; 
+    margin-top: 5px; 
+    list-style-type: '👉 ';
+}
+
+details ul li {
+    padding: 5px 0;
+    background-color: transparent;
+    border-left: none;
+    box-shadow: none;
+    font-weight: 400;
+}
+
+.best-match-box {
+    background-color: #fff3cd;          /* soft yellow highlight */
+    border-left: 6px solid #ffc107;     /* gold accent */
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 600px;
+    margin-top: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    font-size: 1.1em;
+    font-weight: 600;
+    text-align: center;
+}
